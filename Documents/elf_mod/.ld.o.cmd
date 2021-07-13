@@ -1,0 +1,1 @@
+cmd_/home/beverly/Documents/elf_mod/ld.o := ld -m elf_x86_64  -z max-page-size=0x200000    -r -o /home/beverly/Documents/elf_mod/ld.o /home/beverly/Documents/elf_mod/entry.o /home/beverly/Documents/elf_mod/elf.o

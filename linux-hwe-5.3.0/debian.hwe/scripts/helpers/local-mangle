@@ -1,0 +1,41 @@
+#!/bin/bash -eu
+
+. debian/debian.env
+
+# Remove snapdragon from d-i
+sed -i /snapdragon/d ${DEBIAN}/d-i/kernel-versions
+
+# Remove snapdragon from getabis
+sed -i /snapdragon/d ${DEBIAN}/etc/getabis
+
+# We don't build snapdragon
+sed -i '/_snapdragon/d' ${DEBIAN}/rules.d/arm64.mk
+sed -i 's/^\(flavo.*\)\ssnapdragon\(.*\)$/\1\2/' ${DEBIAN}/rules.d/arm64.mk
+rm -f ${DEBIAN}/config/arm64/config.flavour.snapdragon
+
+# Use gzip instead of lz4 for amd64 and i386
+sed -i '/CONFIG_KERNEL_LZ4/d' ${DEBIAN}/config/amd64/config.common.amd64
+sed -i '/CONFIG_KERNEL_LZ4/d' ${DEBIAN}/config/i386/config.common.i386
+sed -i '3aCONFIG_KERNEL_GZIP=y\n# CONFIG_KERNEL_LZ4 is not set' ${DEBIAN}/config/amd64/config.common.amd64
+sed -i '3aCONFIG_KERNEL_GZIP=y\n# CONFIG_KERNEL_LZ4 is not set' ${DEBIAN}/config/i386/config.common.i386
+
+# Use xz instead of lz4 for s390x
+sed -i '/CONFIG_KERNEL_LZ4/d' ${DEBIAN}/config/s390x/config.common.s390x
+sed -i '3aCONFIG_KERNEL_XZ=y\n# CONFIG_KERNEL_LZ4 is not set' ${DEBIAN}/config/s390x/config.common.s390x
+
+# s390x is not signed in Bionic
+sed -i '/sipl_signed/d' ${DEBIAN}/rules.d/s390x.mk
+
+# Build i386 for hwe kernels
+echo '12,19c
+do_tools_usbip = true
+do_tools_cpupower = true
+do_tools_perf = true
+do_tools_perf_jvmti = true
+do_tools_bpftool = true
+do_tools_x86 = true
+do_tools_hyperv = true
+do_extras_package = true
+do_dkms_vbox = true
+.
+w' | ed ${DEBIAN}/rules.d/i386.mk
