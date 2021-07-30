@@ -27,7 +27,7 @@ In make menuconfig, load and save the new .config file, then exit
 ```
 make -j8 deb-pkg
 ```
-four *.deb packages would be generated, check in the upper folder
+four *.deb packages would be generated, check in the upper folder ../
 
 ## install the new kernel
 ```
