@@ -60,3 +60,16 @@ mkdir build-glibc
 ../glibc-2.27/configure --prefix=/usr/local/lib/glibc-testing
 make -j6 CFLAGS="-O2 -U_FORTIFY_SOURCE -fno-stack-protector"
 ```
+# Test onsite mode 
+cd ~/Documents
+```
+git clone https://github.com/jqhong/onsite/tree/main/launcher
+cd launcher 
+gcc hello.c -o hello
+cd ana
+./compile.sh
+ln -s -f hello testtest
+cd ../
+./hello 0x0
+```
+If the program exits smoothly and with "In onsite Mode, dump Target: " on sccreen, oasis in installed successfully.
