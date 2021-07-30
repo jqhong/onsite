@@ -1,7 +1,7 @@
-(Note: OASIS needs to run on a bare-metal machine with a customized host OS, and there would be a VM installed. If your current Ubuntu does not match with the following requirement or you do not want to disturb your current working environment, you can create a new partition and install a new Ubuntu there. Then your machine becomes a dual-boot Ubuntu system, do the following things in the new Ubuntu. It's also okay to skip the step if there is no confliction.)
+(Note: OASIS needs to run on a bare-metal machine with a customized OS, and there would be a VM installed. If your current Ubuntu does not match with the following requirement or you do not want to disturb your current working environment, you can create a new partition and install a new Ubuntu there. Then your machine becomes a dual-boot Ubuntu system, do the following things in the new Ubuntu. It's also okay to skip the step if there is no confliction.)
 
 # Requirement & Preparation
-OASIS needs to run on a bare-metal machine with OS: Ubuntu 18.04; Kernel: linux 5.4.X.
+Host OS: Ubuntu 18.04; Kernel version: linux 5.4.X.
 
 [Install kvm and its related virt-manager toolchain](https://linuxize.com/post/how-to-install-kvm-on-ubuntu-18-0)
 
