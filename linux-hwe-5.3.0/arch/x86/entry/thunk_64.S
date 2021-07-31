@@ -46,12 +46,12 @@
 	THUNK lockdep_sys_exit_thunk,lockdep_sys_exit
 #endif
 
-# #ifdef CONFIG_PREEMPT
+#ifdef CONFIG_PREEMPT
  	THUNK ___preempt_schedule, preempt_schedule
  	THUNK ___preempt_schedule_notrace, preempt_schedule_notrace
  	EXPORT_SYMBOL(___preempt_schedule)
  	EXPORT_SYMBOL(___preempt_schedule_notrace)
-# #endif
+#endif
 
 #if defined(CONFIG_TRACE_IRQFLAGS) \
  || defined(CONFIG_DEBUG_LOCK_ALLOC) \
