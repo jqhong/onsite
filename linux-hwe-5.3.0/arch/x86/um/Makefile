@@ -26,9 +26,9 @@ else
 
 obj-y += syscalls_64.o vdso/
 
-# subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o ../entry/thunk_64.o
-subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o 
-subarch-$(CONFIG_PREEMPT) += ../entry/thunk_64.o
+subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o ../entry/thunk_64.o
+# subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o 
+# subarch-$(CONFIG_PREEMPT) += ../entry/thunk_64.o
 
 endif
 
