@@ -33,8 +33,8 @@ four *.deb packages would be generated, check in the upper folder ../
 ```
 sudo dpkg -i linux-image-5.3.18_5.3.18-1_amd64.deb 
 sudo dpkg -i linux-image-5.3.18-dbg_5.3.18-1_amd64.deb
-sudo dpkg -i linux-image-5.3.18_5.3.18-1_amd64.deb   
-sudo dpkg -i linux-image-5.3.18_5.3.18-1_amd64.deb 
+sudo dpkg -i linux-libc-dev_5.3.18-1_amd64.deb   
+sudo dpkg -i linux-headers-5.3.18_5.3.18-1_amd64.deb 
 ```
     
 ## reboot and enter the new kernel 5.3.18
