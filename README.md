@@ -2,6 +2,8 @@
 
 # Requirement & Preparation
 Host OS: Ubuntu 18.04; Kernel version: linux 5.4.X.
+binutils: 2.30
+gcc:7.5.0
 
 [Install kvm and its related virt-manager toolchain](https://linuxize.com/post/how-to-install-kvm-on-ubuntu-18-0)
 
