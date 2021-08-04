@@ -79,7 +79,9 @@ make && sudo insmod ld.ko
 ```
 # Compile the customized linker
 ```
-cd ../glibc-2.27
+cd ../
+git clone -b master https://github.com/jqhong/onsite.git
+cd glibc-2.27
 mkdir build-glibc
 cd build-glibc/
 ../glibc-2.27/configure --prefix=/usr/local/lib/glibc-testing
