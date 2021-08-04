@@ -14,7 +14,6 @@ gcc:7.5.0
 
 [Install a VM with linux 5.4.X using virt-manager](https://www.tecmint.com/create-virtual-machines-in-kvm-using-virt-manager/4/)
 
-## Get source code
 ```
 git clone https://github.com/jqhong/onsite.git
 ```
@@ -62,7 +61,7 @@ Add a file /etc/sysctl.d/01-disable-aslr.conf containing:
 kernel.randomize_va_space = 0
 ```
 
-# install oasis dependent kernel module
+# Install oasis kernel module ld.ko
 ```
 cd elf-module
 ```
@@ -74,11 +73,11 @@ sudo less /boot/Sysem.map-$(uname -r)
 ```
 2. oasis_lib_path in line 93, change it to "path/to/onsite/oasis_lib/"
 
-## compile & install kernel module
+## compile & install
 ```
 make && sudo insmod ld.ko
 ```
-# Get the customized loader and compile
+# Compile the customized linker
 ```
 cd ../glibc-2.27
 mkdir build-glibc
