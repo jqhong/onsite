@@ -1,3 +1,5 @@
+This repo contains OASIS customized kernel ./linux-hwe-5.3.0/, OASIS libraries ./oasis_lib/, a dependent kernel module ./elf_module/, and a customized linker ./glibc-2.27/. 
+
 (Note: OASIS needs to run on a bare-metal machine with a customized OS, and there would be a VM installed. If your current Ubuntu does not match with the following requirement or you do not want to disturb your current working environment, you can create a new partition and install a new Ubuntu there. Then your machine becomes a dual-boot Ubuntu system, do the following things in the new Ubuntu. It's also okay to skip the step if there is no confliction.)
 
 # Requirement & Preparation
@@ -7,31 +9,38 @@ binutils: 2.30
 
 gcc:7.5.0
 
-[Install kvm and its related virt-manager toolchain](https://linuxize.com/post/how-to-install-kvm-on-ubuntu-18-0)
+[Install kvm and its related virt-manager toolchain](https://linuxize.com/post/how-to-install-kvm-on-ubuntu-18-04/)
+
 
 [Install a VM with linux 5.4.X using virt-manager](https://www.tecmint.com/create-virtual-machines-in-kvm-using-virt-manager/4/)
 
-# Re-compile OASIS kernel source code and install it in the host OS.
-## get source code
+## Get source code
 ```
-git clone https://github.com/jqhong/onsite/tree/main/linux-hwe-5.3.0
+git clone https://github.com/jqhong/onsite.git
 ```
+
+# Compile OASIS kernel and install.
+
 ## install the required compilers and other tools
 ```
 sudo apt-get install build-essential libncurses-dev bison flex libssl-dev libelf-dev
 ```
 ## configuring the kernel
+confirm *CONFIG_X86_SMAP is not set* in the .config file. if *CONFIG_X86_SMAP = y*, change it to *CONFIG_X86_SMAP = n*.
 ```
-cd linux-hwe-5.3.0
-cp -v /boot/config-$(uname -r) .config
+cd onsite/linux-hwe-5.3.18
+grep CONFIG_X86_SMAP .config
+```  
+load and save the .config file, then exit.
+```
 make menuconfig 
 ```
-In make menuconfig, load and save the new .config file, then exit
 ## compile the linux kernel as debian packages
 ```
 make -j8 deb-pkg
+cd ../ && ls -la
 ```
-four *.deb packages would be generated, check in the upper folder ../
+There would be four *.deb packages generated.
 
 ## install the new kernel
 ```
@@ -41,39 +50,39 @@ sudo dpkg -i linux-libc-dev_5.3.18-1_amd64.deb
 sudo dpkg -i linux-headers-5.3.18_5.3.18-1_amd64.deb 
 ```
     
-## reboot and enter the new kernel 5.3.18
+## reboot and enter into the new kernel 5.3.18
 During boot procedure, remember to select Advanced options for ..., then select 5.3.18.
 
-you may want update /etc/default/grub or /boot/grub/grub.cfg to make the 5.3.18 as the default kernel whenever reboot. To avoid the above sumbersome selectings. 
+you may want update /etc/default/grub or /boot/grub/grub.cfg to make the 5.3.18 as the default kernel whenever reboot, to avoid the above troublesome selectings. 
 
-# Get the oasis dependent kernel module and install.
+## disable ASLR permanently
+[reference](https://askubuntu.com/questions/318315/how-can-i-temporarily-disable-aslr-address-space-layout-randomization)
+Add a file /etc/sysctl.d/01-disable-aslr.conf containing:
 ```
-cd ~/Dcouments
-git clone https://github.com/jqhong/onsite/tree/main/elf-module
+kernel.randomize_va_space = 0
+```
+
+# install oasis dependent kernel module
+```
 cd elf-module
-make
-sudo insmod ld.ko
 ```
-# Get the customized loader and re-compile
+## In elf.c, update oasis_lib_path, load_eld_library, & elf_core_dump. 
+
+1. load_elf_library & elf_core_dump, find their addresses from System.map and modify in elf.c line 120 and line 141 accordingly. 
 ```
-cd ~/Documents
-mkdir glibc-2.27
-cd glibc-2.27
-git clone https://github.com/jqhong/onsite/tree/master/glibc-2.27
+sudo less /boot/Sysem.map-$(uname -r)
+```
+2. oasis_lib_path in line 93, change it to "path/to/onsite/oasis_lib/"
+
+## compile & install kernel module
+```
+make && sudo insmod ld.ko
+```
+# Get the customized loader and compile
+```
+cd ../glibc-2.27
 mkdir build-glibc
+cd build-glibc/
 ../glibc-2.27/configure --prefix=/usr/local/lib/glibc-testing
 make -j6 CFLAGS="-O2 -U_FORTIFY_SOURCE -fno-stack-protector"
 ```
-# Test onsite mode 
-cd ~/Documents
-```
-git clone https://github.com/jqhong/onsite/tree/main/launcher
-cd launcher 
-gcc hello.c -o hello
-cd ana
-./compile.sh
-ln -s -f hello testtest
-cd ../
-./hello 0x0
-```
-If the program exits smoothly and with "In onsite Mode, dump Target: " on sccreen, oasis in installed successfully.
