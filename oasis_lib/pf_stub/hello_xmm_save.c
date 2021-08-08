@@ -30,26 +30,34 @@ void stub (void)
         "movq $0xffff9876, %rax; \n\t"
         "vmcall; \n\t"
         "1: \n\t"
-        //for debugging
-        "movq $0xffffffff, %rax; \n\t"
-        "vmcall; \n\t"
-        // "pushq $0x2b; \n\t"
-        "movq 0x40(%rsp), %rdx; \n\t"
-        "pushq %rdx; \n\t"
-        // "movq $0xfffffef07ffffc48, %rdx; \n\t"//rsp
-        "movq $0xfffffef07ffffbb8, %rdx; \n\t"//rsp
-        "pushq %rdx; \n\t"
-        "pushf; \n\t"
-        // "pushq $0x33; \n\t"
-        "movq 0x40(%rsp), %rdx; \n\t"
-        "pushq %rdx; \n\t"
-        "movq $0xfffffef02090e008, %rdx; \n\t"
-        "movq (%rdx), %rdx; \n\t"//find_n_exit_pf
-        // "movq $0x123456789, %rax; \n\t"
+        // //for debugging
+        "movq $0xfffffeffffffecc0, %rsp; \n\t"//ana_stack
+        "movq $0xfffffe9000905fd0, %rdx; \n\t"
+        "movq (%rdx), %rdx; \n\t"//ana_pf_handler
+        "jmpq *%rdx; \n\t"//only works when all in ring 0
+        // // "movq $0xffffffff, %rax; \n\t"
+        // // "vmcall; \n\t"
+        // // // "pushq $0x2b; \n\t"
+        // "movq 0x40(%rsp), %rdx; \n\t"
+        // "pushq %rdx; \n\t"
+        // // "movq $0xfffffef07ffffc48, %rdx; \n\t"//rsp
+        // // "movq $0xfffffef07ffffbb8, %rdx; \n\t"//rsp
+        // "movq $0xfffffeffffffecc0, %rdx; \n\t"//ana_stack
+        // "pushq %rdx; \n\t"
+        // "pushf; \n\t"
+        // // "pushq $0x33; \n\t"
+        // "movq 0x40(%rsp), %rdx; \n\t"
+        // "pushq %rdx; \n\t"
+        // // "movq $0xfffffef02090e008, %rdx; \n\t"
+        // "movq $0xfffffe9000905fd0, %rdx; \n\t"
+        // "movq (%rdx), %rdx; \n\t"//find_n_exit_pf
+        // // "movq $0x123456789, %rax; \n\t"
+        // // "vmcall; \n\t"
+        // "pushq %rdx; \n\t"
+        // "movq $0xffffffff, %rax; \n\t"
         // "vmcall; \n\t"
-        "pushq %rdx; \n\t"
-        "iretq; \n\t"
-        // "callq *%rdx; \n\t"
+        // "iretq; \n\t"
+        // // "callq *%rdx; \n\t"
         );
 }
             // "pushq %rsi; \n\t"

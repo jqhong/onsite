@@ -89,6 +89,14 @@ extern struct arg_blk imee_arg;
 #define fixed_vvar_addr 0x7ffff7ffb000//0x7ffff7ff9000-0x7ffff7ffa000 : libc.so data page? 
                                       //0x7ffff7ffb000-0x7ffff7ffe000 : vvar
                                       //0x7ffff7ffe000-0x7ffff7fff000 : vdso
+
+char oasis_lib_path[] = "/home/beverly/Documents/oasis_lib/";
+// char* sig_wrap_path = "signal_toy/sig_wrap/sig_wrap.so";
+// char* sig_handler_path = "/home/beverly/Documents/oasis_lib/signal_toy/dummy_handler/hello";
+// char* ana_pf_path = "/home/beverly/Documents/oasis_lib/pf_stub/pf.so";
+// char* gate_path = "/home/beverly/Documents/oasis_lib/springboard/gate.so";
+// char* gate_data_path = "/home/beverly/Documents/oasis_lib/springboard/data_page";
+// char* t_syscall_gate = "/home/beverly/Documents/oasis_lib/springboard/syscall_gate.so";
 /* /Jiaqi */
 
 #ifndef user_long_t
@@ -108,7 +116,8 @@ int my_load_elf_binary(struct linux_binprm *bprm);
 #ifdef CONFIG_USELIB
 // static int load_elf_library(struct file *);
 // #define load_elf_library 0xffffffffb414b180UL
-#define load_elf_library 0xffffffff8134fb70UL
+// #define load_elf_library 0xffffffff8134fb70UL
+#define load_elf_library 0xffffffff8134b180UL
 #else
 #define load_elf_library NULL
 #endif
@@ -128,7 +137,8 @@ int my_load_elf_binary(struct linux_binprm *bprm);
  */
 #ifdef CONFIG_ELF_CORE
 /* Jiaqi */
-#define elf_core_dump 0xffffffffb414e560UL
+// #define elf_core_dump 0xffffffffb414e560UL
+#define elf_core_dump 0xffffffff8134b510UL
 // static int elf_core_dump(struct coredump_params *cprm);
 /* /Jiaqi */
 #else
@@ -1718,8 +1728,20 @@ out_free_interp:
         imee_arg_ptr->rip = elf_entry;
         imee_arg_ptr->rsp = bprm->p;
         DBG ("in execve, address of imee_arg: %p, vcpufd: %d, address of vcpufd: %p, sstub_entry: %lx\n", imee_arg_ptr, imee_arg.vcpu_fd, &(imee_arg.vcpu_fd));
-    
-        fonsite_wrap = open_exec ("/home/beverly/Documents/oasis_lib/signal_toy/sig_wrap/sig_wrap.so");
+   
+        char tmp_olib_p[100];
+        char sig_wrap_p[] = "signal_toy/sig_wrap/sig_wrap.so";
+        int path_len = strlen(oasis_lib_path) + strlen(sig_wrap_p);
+        if (path_len >= 100)
+        {       
+            printk ("!!!!!no sufficient space for sig wrap path. \n");
+            goto out;
+        }
+        strcpy(tmp_olib_p, oasis_lib_path);
+        strcat (tmp_olib_p, sig_wrap_p);
+        fonsite_wrap = open_exec(tmp_olib_p);
+        // fonsite_wrap = open_exec ("/home/beverly/Documents/oasis_lib/signal_toy/sig_wrap/sig_wrap.so");
+        DBG ("signal wrapper path: %s. \n", tmp_olib_p);
         if (!IS_ERR(fonsite_wrap))
         {
             ret_mmap = vm_mmap (fonsite_wrap, onsite_wrapper_addr, 0x1000, PROT_READ | PROT_EXEC | PROT_WRITE, MAP_FIXED | MAP_PRIVATE | MAP_POPULATE, 0);
@@ -1731,7 +1753,18 @@ out_free_interp:
             }
         }
         
-        fdummy_handler = open_exec ("/home/beverly/Documents/oasis_lib/signal_toy/dummy_handler/hello");
+        char sig_handler_p[] = "signal_toy/dummy_handler/hello";
+        path_len = strlen(oasis_lib_path) + strlen(sig_handler_p);
+        if (path_len >= 100)
+        {       
+            printk ("!!!!!no sufficient space for sig handler path. \n");
+            goto out;
+        }
+        strcpy(tmp_olib_p, oasis_lib_path);
+        strcat (tmp_olib_p, sig_handler_p);
+        fdummy_handler = open_exec(tmp_olib_p);
+        // fdummy_handler = open_exec ("/home/beverly/Documents/oasis_lib/signal_toy/dummy_handler/hello");
+        DBG ("signal handler path: %s. \n", tmp_olib_p);
         if (!IS_ERR(fdummy_handler))
         {
             ret_mmap = vm_mmap (fdummy_handler, dummy_handler_addr, 0x1000, PROT_READ | PROT_EXEC | PROT_WRITE, MAP_FIXED | MAP_PRIVATE | MAP_POPULATE, 0);
@@ -1760,7 +1793,18 @@ out_free_interp:
 
         /* prepare onsite IDT, tss_struct, PF handler, PF stack */
         struct file* pf_handler;
-        pf_handler = open_exec ("/home/beverly/Documents/oasis_lib/pf_stub/pf.so");
+        char ana_pf_p[] = "pf_stub/pf.so";
+        path_len = strlen(oasis_lib_path) + strlen(ana_pf_p);
+        if (path_len >= 100)
+        {       
+            printk ("!!!!!no sufficient space for ana pf handler path. \n");
+            goto out;
+        }
+        strcpy(tmp_olib_p, oasis_lib_path);
+        strcat (tmp_olib_p, ana_pf_p);
+        pf_handler = open_exec(tmp_olib_p);
+        DBG ("pf handler path: %s. \n", tmp_olib_p);
+        // pf_handler = open_exec ("/home/beverly/Documents/oasis_lib/pf_stub/pf.so");
         if (!IS_ERR(pf_handler))
         {
             ret_mmap = vm_mmap (pf_handler, onsite_pf_addr, 0x1000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_FIXED | MAP_PRIVATE | MAP_POPULATE, 0);
@@ -1781,7 +1825,18 @@ out_free_interp:
         if (imee_arg_ptr->instrum_flag == 1)
         {
             struct file* debug_handler;
-            debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/gate.so");
+            char gate_p[] = "springboard/gate.so";
+            path_len = strlen(oasis_lib_path) + strlen(gate_p);
+            if (path_len >= 100)
+            {       
+                printk ("!!!!!no sufficient space for gate path. \n");
+                goto out;
+            }
+            strcpy(tmp_olib_p, oasis_lib_path);
+            strcat (tmp_olib_p, gate_p);
+            debug_handler = open_exec(tmp_olib_p);
+            // debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/gate.so");
+            DBG ("gate code path: %s. \n", tmp_olib_p);
             // if (!IS_ERR(debug_handler))
             if (IS_ERR(debug_handler))
             {
@@ -1793,7 +1848,18 @@ out_free_interp:
            
             /* allocate memory for shar_lib's data page and analyser's
              * descriptor tables */
-            debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/data_page");
+            char gate_data_p[] = "springboard/data_page";
+            path_len = strlen(oasis_lib_path) + strlen(gate_data_p);
+            if (path_len >= 100)
+            {       
+                printk ("!!!!!no sufficient space for gate data path. \n");
+                goto out;
+            }
+            strcpy(tmp_olib_p, oasis_lib_path);
+            strcat (tmp_olib_p, gate_data_p);
+            debug_handler = open_exec(tmp_olib_p);
+            // debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/data_page");
+            DBG ("gate data path: %s. \n", tmp_olib_p);
             if (IS_ERR(debug_handler))
             {
                 printk ("open data_page fail. \n");
@@ -1810,9 +1876,21 @@ out_free_interp:
             memset ((void*)(gate_addr + 0x1000), 0x0, gate_data_num);
             // set_smap_bit();
             DBG ("data pages are mapped successful at addr: %lx\n", ret_mmap);
+            
             /* allocate page for syscall_gate page, this page is NX in s-EPT,
              * but X in t-EPT */
-            debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/syscall_gate.so");
+            char syscall_gate_p[] = "springboard/syscall_gate.so";
+            path_len = strlen(oasis_lib_path) + strlen(syscall_gate_p);
+            if (path_len >= 100)
+            {       
+                printk ("!!!!!no sufficient space for syscall gate path. \n");
+                goto out;
+            }
+            strcpy(tmp_olib_p, oasis_lib_path);
+            strcat (tmp_olib_p, syscall_gate_p);
+            debug_handler = open_exec(tmp_olib_p);
+            // debug_handler = open_exec ("/home/beverly/Documents/oasis_lib/springboard/syscall_gate.so");
+            DBG ("syscall gate path: %s. \n", tmp_olib_p);
             if (IS_ERR(debug_handler))
             {
                 printk ("open syscall_gate.so fail. \n");

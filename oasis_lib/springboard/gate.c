@@ -80,6 +80,12 @@ asm ("movq %rax, 0x5d0c(%rip) \n");//since rsp stores rax
 asm ("movq $0x0, %rax \n");
 asm ("movq $0x9, %rcx \n");
 asm ("vmfunc \n");
+asm ("movq (%rsp), %rbx \n");//error code
+asm ("movq 0x8(%rsp), %rsi \n");//rip
+asm ("movq 0x10(%rsp), %rdx \n");//cs
+asm ("movq 0x18(%rsp), %rcx \n");//rflags
+asm ("movq 0x20(%rsp), %r10 \n");//rsp
+asm ("movq 0x28(%rsp), %r9 \n");//rsp
 asm ("vmcall \n");
 asm ("jmpq *0x5ccd(%rip) \n");//jump to malloc/free ret handler
 // asm ("movq (%rsp), %rdi \n");
