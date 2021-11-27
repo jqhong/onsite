@@ -61,7 +61,7 @@ Add a file /etc/sysctl.d/01-disable-aslr.conf containing:
 kernel.randomize_va_space = 0
 ```
 ## disable pti through boot option
-add *nopti* after *quite splash* in /etc/default/grub, then 
+add 'nopti' after 'quite splash' in /etc/default/grub, then 
 ```
 sudo update-grub2
 ```
