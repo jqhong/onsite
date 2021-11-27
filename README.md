@@ -76,7 +76,11 @@ cd elf-module
 sudo less /boot/Sysem.map-$(uname -r)
 ```
 2. oasis_lib_path in line 93, change it to "path/to/onsite/oasis_lib/"
-3. ensure the .so files in oasis_lib have X permission. if not, use the compile.sh in each sub-folder to re-generate *.so
+3. ensure the .so files in oasis_lib have X permission. if not, use the compile.sh in each sub-folder to re-generate *.so 
+4. add X permission for data_page file in oasis_lib/springboard/ by
+```
+sudo chmod +x /path/to/data_page
+```
 
 ## compile & install
 ```
